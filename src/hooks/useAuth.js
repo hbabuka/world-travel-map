@@ -21,7 +21,10 @@ export function useAuth() {
   const signInWithGoogle = () =>
     supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })
 
+  const signInWithGitHub = () =>
+    supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } })
+
   const signOut = () => supabase.auth.signOut()
 
-  return { user, loading, signInWithGoogle, signOut }
+  return { user, loading, signInWithGoogle, signInWithGitHub, signOut }
 }

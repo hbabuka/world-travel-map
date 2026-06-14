@@ -397,6 +397,34 @@ html, body, #root { margin: 0; height: 100%; padding: 0; }
 }
 
 /* ─── All Places modal ───────────────────────────────────────────────────── */
+.wtm-confirm {
+  background: var(--panel); border-radius: 16px; padding: 28px;
+  width: 340px; box-shadow: 0 8px 40px rgba(0,0,0,.18);
+  animation: wtmRise .18s ease;
+}
+.wtm-confirm-title {
+  font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 17px;
+  letter-spacing: -.02em; color: var(--ink); margin: 0 0 10px;
+}
+.wtm-confirm-body {
+  font-size: 14px; line-height: 1.55; color: var(--muted); margin: 0 0 24px;
+}
+.wtm-confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.wtm-confirm-cancel {
+  height: 38px; padding: 0 18px; border-radius: 9px;
+  border: 1px solid var(--hair); background: transparent;
+  font-family: 'Archivo', sans-serif; font-weight: 600; font-size: 14px;
+  color: var(--muted); cursor: pointer; transition: border-color .15s, color .15s;
+}
+.wtm-confirm-cancel:hover { border-color: var(--ink); color: var(--ink); }
+.wtm-confirm-ok {
+  height: 38px; padding: 0 18px; border-radius: 9px;
+  border: none; background: var(--accent);
+  font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 14px;
+  color: #fff; cursor: pointer; transition: opacity .15s;
+}
+.wtm-confirm-ok:hover { opacity: .85; }
+.wtm-menu-item--danger { color: var(--accent); }
 .wtm-modal-scrim {
   position: fixed; inset: 0; z-index: 100;
   background: color-mix(in srgb, var(--paper) 30%, rgba(0,0,0,.5));

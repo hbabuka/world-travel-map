@@ -230,6 +230,7 @@ export default function App() {
   const [collapsed, setCollapsed] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [confirmReset, setConfirmReset] = useState(false)
 
   const mapRef = useRef(null)
   const addTimer = useRef(null)
@@ -291,6 +292,7 @@ export default function App() {
     ;[...visitedNames].forEach(name => removeByName(name))
     setMenuOpen(false)
     setModalOpen(false)
+    setConfirmReset(false)
   }, [visitedNames, removeByName])
 
   const nameSet = useMemo(() => new Set(ALL_FEATURES.map(f => f.properties.name)), [])
@@ -460,7 +462,7 @@ export default function App() {
                   <div className="wtm-menu-name">{displayName}</div>
                   <div className="mono wtm-menu-mail">{user.email}</div>
                 </div>
-                <button className="wtm-menu-item" onClick={resetMap}>Reset map</button>
+                <button className="wtm-menu-item wtm-menu-item--danger" onClick={() => { setMenuOpen(false); setConfirmReset(true) }}>Reset map</button>
                 <button className="wtm-menu-item" onClick={() => { signOut(); setMenuOpen(false) }}>Sign out</button>
               </div>
             )}
@@ -613,6 +615,22 @@ export default function App() {
         onRemove={removeVisit}
         onClose={() => setModalOpen(false)}
       />
+
+      {/* Reset map confirmation */}
+      {confirmReset && (
+        <div className="wtm-modal-scrim" onClick={() => setConfirmReset(false)}>
+          <div className="wtm-confirm" onClick={e => e.stopPropagation()}>
+            <p className="wtm-confirm-title">Reset your map?</p>
+            <p className="wtm-confirm-body">
+              This will remove all {visitedNames.size} pinned {visitedNames.size === 1 ? 'country' : 'countries'}. This can&rsquo;t be undone.
+            </p>
+            <div className="wtm-confirm-actions">
+              <button className="wtm-confirm-cancel" onClick={() => setConfirmReset(false)}>Cancel</button>
+              <button className="wtm-confirm-ok" onClick={resetMap}>Yes, reset</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

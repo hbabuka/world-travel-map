@@ -1,7 +1,8 @@
-export function EmptyState({ onLoadSample }) {
+export function EmptyState({ onLoadSample, onDismiss }) {
   return (
     <div className="wtm-empty">
       <div className="wtm-empty-card">
+        <button className="wtm-empty-close" onClick={onDismiss} aria-label="Dismiss">×</button>
         <div className="mono wtm-empty-eyebrow">Get started</div>
         <h2 className="wtm-empty-title">Start your travel map</h2>
         <p className="wtm-empty-sub">

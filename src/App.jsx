@@ -217,7 +217,7 @@ const ALL_FEATURES = feature(worldData, worldData.objects.countries).features
 
 /* ─── App ────────────────────────────────────────────────────────────────── */
 export default function App() {
-  const { user, loading: authLoading, signInWithGoogle, signInWithGitHub, signOut } = useAuth()
+  const { user, loading: authLoading, signInWithGoogle, signInWithGitHub, signInWithEmail, signOut } = useAuth()
   const { addTrip, removeByName, visitedNames } = useTrips(user?.id)
 
   const [hoverName, setHoverName] = useState(null)
@@ -372,6 +372,7 @@ export default function App() {
           features={ALL_FEATURES}
           onSignInGoogle={signInWithGoogle}
           onSignInGitHub={signInWithGitHub}
+          onSignInEmail={signInWithEmail}
         />
       </div>
     )

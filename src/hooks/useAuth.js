@@ -24,7 +24,10 @@ export function useAuth() {
   const signInWithGitHub = () =>
     supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } })
 
+  const signInWithEmail = (email) =>
+    supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } })
+
   const signOut = () => supabase.auth.signOut()
 
-  return { user, loading, signInWithGoogle, signInWithGitHub, signOut }
+  return { user, loading, signInWithGoogle, signInWithGitHub, signInWithEmail, signOut }
 }

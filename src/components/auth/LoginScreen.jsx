@@ -21,14 +21,41 @@ function GitHubIcon() {
   )
 }
 
+function MailIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <path d="m2 7 10 7 10-7"/>
+    </svg>
+  )
+}
+
 const decorSet = new Set(SEED)
 
-export function LoginScreen({ features, onSignInGoogle, onSignInGitHub }) {
+export function LoginScreen({ features, onSignInGoogle, onSignInGitHub, onSignInEmail }) {
   const [pending, setPending] = useState(null)
+  const [email, setEmail] = useState('')
+  const [emailSent, setEmailSent] = useState(false)
+  const [emailError, setEmailError] = useState(null)
 
   const go = (provider, handler) => {
     setPending(provider)
     handler()
+  }
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault()
+    if (!email.trim()) return
+    setPending('email')
+    setEmailError(null)
+    const { error } = await onSignInEmail(email.trim())
+    if (error) {
+      setEmailError(error.message)
+      setPending(null)
+    } else {
+      setEmailSent(true)
+      setPending(null)
+    }
   }
 
   return (
@@ -47,24 +74,63 @@ export function LoginScreen({ features, onSignInGoogle, onSignInGitHub }) {
             Pin the places you&rsquo;ve been, watch your world fill in, and keep a quiet record of where you&rsquo;ve wandered.
           </p>
 
-          <div className="wtm-auth-btns">
-            <button
-              className={`wtm-auth-btn${pending === 'google' ? ' is-pending' : ''}`}
-              disabled={!!pending}
-              onClick={() => go('google', onSignInGoogle)}
-            >
-              {pending === 'google' ? <span className="wtm-auth-spin" /> : <GoogleIcon />}
-              Continue with Google
-            </button>
-            <button
-              className={`wtm-auth-btn dark${pending === 'github' ? ' is-pending' : ''}`}
-              disabled={!!pending}
-              onClick={() => go('github', onSignInGitHub)}
-            >
-              {pending === 'github' ? <span className="wtm-auth-spin light" /> : <GitHubIcon />}
-              Continue with GitHub
-            </button>
-          </div>
+          {emailSent ? (
+            <div className="wtm-auth-sent">
+              <div className="wtm-auth-sent-icon" aria-hidden="true">✉</div>
+              <p className="wtm-auth-sent-title">Check your inbox</p>
+              <p className="wtm-auth-sent-sub">
+                We sent a sign-in link to <strong>{email}</strong>. Click it to continue.
+              </p>
+              <button className="wtm-auth-resend" onClick={() => { setEmailSent(false) }}>
+                Use a different email
+              </button>
+            </div>
+          ) : (
+            <div className="wtm-auth-btns">
+              <button
+                className={`wtm-auth-btn${pending === 'google' ? ' is-pending' : ''}`}
+                disabled={!!pending}
+                onClick={() => go('google', onSignInGoogle)}
+              >
+                {pending === 'google' ? <span className="wtm-auth-spin" /> : <GoogleIcon />}
+                Continue with Google
+              </button>
+              <button
+                className={`wtm-auth-btn dark${pending === 'github' ? ' is-pending' : ''}`}
+                disabled={!!pending}
+                onClick={() => go('github', onSignInGitHub)}
+              >
+                {pending === 'github' ? <span className="wtm-auth-spin light" /> : <GitHubIcon />}
+                Continue with GitHub
+              </button>
+
+              <div className="wtm-auth-divider">
+                <span className="mono">or</span>
+              </div>
+
+              <form className="wtm-auth-email-form" onSubmit={handleEmailSubmit}>
+                <input
+                  className="wtm-auth-email-input"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  disabled={!!pending}
+                  required
+                  autoComplete="email"
+                />
+                <button
+                  className={`wtm-auth-btn${pending === 'email' ? ' is-pending' : ''}`}
+                  type="submit"
+                  disabled={!!pending || !email.trim()}
+                >
+                  {pending === 'email' ? <span className="wtm-auth-spin" /> : <MailIcon />}
+                  Continue with Email
+                </button>
+                {emailError && <p className="wtm-auth-email-error">{emailError}</p>}
+              </form>
+            </div>
+          )}
         </div>
 
         <div className="mono wtm-auth-foot">

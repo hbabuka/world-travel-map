@@ -451,6 +451,35 @@ html, body, #root { margin: 0; height: 100%; padding: 0; }
 .wtm-auth-btn.dark:hover:not(:disabled) { background: #000; border-color: #000; }
 .wtm-auth-spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--hair); border-top-color: var(--accent); animation: wtmSpin .7s linear infinite; }
 .wtm-auth-spin.light { border-color: rgba(255,255,255,.3); border-top-color: #fff; }
+.wtm-auth-divider {
+  display: flex; align-items: center; gap: 12px; color: var(--faint);
+}
+.wtm-auth-divider::before,
+.wtm-auth-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--hair);
+}
+.wtm-auth-email-form { display: flex; flex-direction: column; gap: 11px; }
+.wtm-auth-email-input {
+  height: 52px; padding: 0 16px; border: 1px solid var(--hair); border-radius: 12px;
+  background: color-mix(in srgb, var(--paper) 50%, var(--panel));
+  color: var(--ink); font-family: 'Archivo', sans-serif; font-size: 15px;
+  outline: none; transition: border-color .15s;
+}
+.wtm-auth-email-input::placeholder { color: var(--faint); }
+.wtm-auth-email-input:focus { border-color: var(--accent); }
+.wtm-auth-email-input:disabled { opacity: .75; }
+.wtm-auth-email-error { font-size: 13px; color: var(--accent); margin: 0; }
+.wtm-auth-sent { max-width: 380px; }
+.wtm-auth-sent-icon { font-size: 32px; margin-bottom: 16px; }
+.wtm-auth-sent-title { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 22px; color: var(--ink); margin: 0 0 10px; }
+.wtm-auth-sent-sub { font-size: 15px; line-height: 1.55; color: var(--muted); margin: 0 0 20px; }
+.wtm-auth-sent-sub strong { color: var(--ink); font-weight: 600; }
+.wtm-auth-resend {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font-family: 'Archivo', sans-serif; font-size: 14px; font-weight: 600;
+  color: var(--accent); text-decoration: underline; text-underline-offset: 3px;
+}
+.wtm-auth-resend:hover { opacity: .75; }
 .wtm-auth-foot { display: flex; justify-content: space-between; color: var(--faint); margin-top: 26px; }
 .wtm-auth-right {
   flex: 1 1 auto; position: relative; overflow: hidden; background: #16120b;

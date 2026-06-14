@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useTrips } from '@/hooks/useTrips'
 import { WorldMap } from '@/components/map/WorldMap'
 import { LoginScreen } from '@/components/auth/LoginScreen'
+import { LoadingScreen } from '@/components/auth/LoadingScreen'
 import {
   CONTINENT_ORDER, WORLD_TOTAL,
   continentOf, resolveAlias, SEED,
@@ -358,8 +359,8 @@ export default function App() {
   /* ─── Auth loading ─────────────────────────────────────────── */
   if (authLoading) {
     return (
-      <div className="wtm-root" style={{ display: 'grid', placeItems: 'center' }}>
-        <div className="wtm-spinner" />
+      <div className="wtm-root">
+        <LoadingScreen features={ALL_FEATURES} />
       </div>
     )
   }

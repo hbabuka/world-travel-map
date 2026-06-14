@@ -15,7 +15,7 @@ import { SidePanel } from '@/components/SidePanel'
 import { AllPlacesModal } from '@/components/modals/AllPlacesModal'
 import { ConfirmResetModal } from '@/components/modals/ConfirmResetModal'
 import {
-  CONTINENT_ORDER, WORLD_TOTAL,
+  CONTINENT_ORDER,
   continentOf, resolveAlias, SEED,
 } from '@/lib/continents'
 
@@ -136,8 +136,12 @@ export default function App() {
     return g
   }, [visitedNames])
 
-  const count = visitedNames.size
-  const pct = Math.round((count / WORLD_TOTAL) * 1000) / 10
+  // Derive count from continent-filtered visits so Antarctica features don't skew stats
+  const count = useMemo(() =>
+    Object.values(visitedByContinent).reduce((a, b) => a + b, 0)
+  , [visitedByContinent])
+  const mapTotal = Object.values(continentTotals).reduce((a, b) => a + b, 0)
+  const pct = Math.round((count / mapTotal) * 1000) / 10
   const continentsCovered = CONTINENT_ORDER.filter(c => visitedByContinent[c] > 0).length
 
   const matches = useMemo(() => {
@@ -301,7 +305,7 @@ export default function App() {
             </button>
           </div>
 
-          {count > 0 && (
+          {visitedNames.size > 0 && (
             <PlacesBar
               chips={chips}
               justAdded={justAdded}
@@ -310,7 +314,7 @@ export default function App() {
             />
           )}
 
-          {count === 0 && !emptyDismissed && (
+          {visitedNames.size === 0 && !emptyDismissed && (
             <EmptyState onLoadSample={loadSample} onDismiss={() => setEmptyDismissed(true)} />
           )}
 

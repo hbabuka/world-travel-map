@@ -2,6 +2,25 @@ import { CountUp } from '@/components/ui/CountUp'
 import { CONTINENT_ORDER } from '@/lib/continents'
 import { getRank, RANKS } from '@/lib/ranks'
 
+const RANK_ICONS = [
+  // Blank Page — empty document
+  <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></>,
+  // First Ink — pen
+  <><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
+  // Dog-Eared — bookmark
+  <><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></>,
+  // Full Passport — open book
+  <><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></>,
+  // Second Passport — layers
+  <><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>,
+  // Diplomat — briefcase
+  <><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>,
+  // Cartographer — compass
+  <><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></>,
+  // World Atlas — globe
+  <><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>,
+]
+
 export function SidePanel({ count, pct, continentsCovered, continentTotals, visitedByContinent, mapTotal, onCollapse, onOpenRemaining }) {
   const { rank, next, index, progress } = getRank(count)
 
@@ -69,8 +88,7 @@ export function SidePanel({ count, pct, continentsCovered, continentTotals, visi
               <div className="wtm-rank-badge">
                 <div className="wtm-rank-stamp">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
-                    <circle cx="12" cy="9" r="2.5"/>
+                    {RANK_ICONS[index]}
                   </svg>
                 </div>
                 <span className="wtm-rank-name">{rank.name}</span>

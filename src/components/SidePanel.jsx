@@ -2,7 +2,7 @@ import { CountUp } from '@/components/ui/CountUp'
 import { CONTINENT_ORDER } from '@/lib/continents'
 import { getRank } from '@/lib/ranks'
 
-export function SidePanel({ count, pct, continentsCovered, continentTotals, visitedByContinent, onCollapse }) {
+export function SidePanel({ count, pct, continentsCovered, continentTotals, visitedByContinent, mapTotal, onCollapse, onOpenRemaining }) {
   const { rank, next, index, progress } = getRank(count)
 
   return (
@@ -35,7 +35,14 @@ export function SidePanel({ count, pct, continentsCovered, continentTotals, visi
 
         {/* Continent breakdown */}
         <div className="wtm-sect">
-          <div className="wtm-sect-head"><span className="mono">By continent</span></div>
+          <div className="wtm-sect-head">
+            <span className="mono">By continent</span>
+            {mapTotal - count > 0 && (
+              <button className="wtm-remaining-btn" onClick={onOpenRemaining}>
+                {mapTotal - count} remaining
+              </button>
+            )}
+          </div>
           {CONTINENT_ORDER.map(c => {
             const tot = continentTotals[c] || 0
             const v = visitedByContinent[c] || 0

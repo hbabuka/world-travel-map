@@ -31,6 +31,7 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [modalTab, setModalTab] = useState('visited')
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [emptyDismissed, setEmptyDismissed] = useState(false)
@@ -131,6 +132,18 @@ export default function App() {
     visitedNames.forEach(name => {
       const c = continentOf(name)
       if (c && g[c]) g[c].push(name)
+    })
+    Object.values(g).forEach(arr => arr.sort((a, b) => a.localeCompare(b)))
+    return g
+  }, [visitedNames])
+
+  const groupedRemaining = useMemo(() => {
+    const g = {}
+    CONTINENT_ORDER.forEach(c => { g[c] = [] })
+    ALL_FEATURES.forEach(f => {
+      const name = f.properties.name
+      const c = continentOf(name)
+      if (c && g[c] && !visitedNames.has(name)) g[c].push(name)
     })
     Object.values(g).forEach(arr => arr.sort((a, b) => a.localeCompare(b)))
     return g
@@ -310,7 +323,7 @@ export default function App() {
               chips={chips}
               justAdded={justAdded}
               onRemove={removeVisit}
-              onOpenAll={() => setModalOpen(true)}
+              onOpenAll={() => { setModalTab('visited'); setModalOpen(true) }}
             />
           )}
 
@@ -331,7 +344,9 @@ export default function App() {
           continentsCovered={continentsCovered}
           continentTotals={continentTotals}
           visitedByContinent={visitedByContinent}
+          mapTotal={mapTotal}
           onCollapse={() => setCollapsed(true)}
+          onOpenRemaining={() => { setModalTab('remaining'); setModalOpen(true) }}
         />
       </div>
 
@@ -347,8 +362,12 @@ export default function App() {
 
       <AllPlacesModal
         open={modalOpen}
-        byContinent={groupedVisited}
-        total={count}
+        tab={modalTab}
+        onTabChange={setModalTab}
+        visitedByContinent={groupedVisited}
+        visitedTotal={count}
+        remainingByContinent={groupedRemaining}
+        remainingTotal={mapTotal - count}
         onRemove={removeVisit}
         onClose={() => setModalOpen(false)}
       />

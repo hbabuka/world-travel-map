@@ -1,4 +1,5 @@
 import { WorldMap } from '@/components/map/WorldMap'
+import { Logo } from '@/components/Logo'
 import { SEED, WORLD_TOTAL } from '@/lib/continents'
 
 const decorSet = new Set(SEED)
@@ -8,9 +9,9 @@ export function LoadingScreen({ features }) {
     <div className="wtm-auth">
       <div className="wtm-auth-left">
         <div className="wtm-brand">
-          <span className="wtm-mark" aria-hidden="true" />
-          <span className="wtm-wordmark">World Travel Map</span>
-          <span className="mono wtm-brand-tag">Field Log</span>
+          <Logo />
+          <span className="wtm-wordmark">Stamped</span>
+          <span className="mono wtm-brand-tag">World Travel Map</span>
         </div>
 
         <div className="wtm-auth-mid">
@@ -19,7 +20,7 @@ export function LoadingScreen({ features }) {
           <div className="wtm-loading-bar-wrap">
             <div className="wtm-loading-bar" />
           </div>
-          <p className="mono wtm-loading-label">Loading your field log…</p>
+          <p className="mono wtm-loading-label">Loading your travel map…</p>
         </div>
 
         <div className="mono wtm-auth-foot">

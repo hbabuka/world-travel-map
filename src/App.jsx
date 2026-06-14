@@ -9,6 +9,7 @@ import { useTrips } from '@/hooks/useTrips'
 import { WorldMap } from '@/components/map/WorldMap'
 import { LoginScreen } from '@/components/auth/LoginScreen'
 import { LoadingScreen } from '@/components/auth/LoadingScreen'
+import { Logo } from '@/components/Logo'
 import {
   CONTINENT_ORDER, WORLD_TOTAL,
   continentOf, resolveAlias, SEED,
@@ -393,9 +394,9 @@ export default function App() {
       {/* Header */}
       <header className="wtm-header">
         <div className="wtm-brand">
-          <span className="wtm-mark" aria-hidden="true" />
-          <span className="wtm-wordmark">World Travel Map</span>
-          <span className="mono wtm-brand-tag">Field Log</span>
+          <Logo />
+          <span className="wtm-wordmark">Stamped</span>
+          <span className="mono wtm-brand-tag">World Travel Map</span>
         </div>
 
         <div className="wtm-search" ref={searchBoxRef}>

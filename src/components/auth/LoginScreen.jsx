@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { WorldMap } from '@/components/map/WorldMap'
+import { Logo } from '@/components/Logo'
 import { SEED, WORLD_TOTAL } from '@/lib/continents'
 
 function GoogleIcon() {
@@ -61,10 +62,12 @@ export function LoginScreen({ features, onSignInGoogle, onSignInGitHub, onSignIn
   return (
     <div className="wtm-auth">
       <div className="wtm-auth-left">
-        <div className="wtm-brand">
-          <span className="wtm-mark" aria-hidden="true" />
-          <span className="wtm-wordmark">World Travel Map</span>
-          <span className="mono wtm-brand-tag">Field Log</span>
+        <div className="wtm-auth-brand">
+          <Logo size={72} />
+          <div>
+            <div className="wtm-wordmark wtm-auth-wordmark">Stamped</div>
+            <div className="mono wtm-brand-tag wtm-auth-brand-tag">World Travel Map</div>
+          </div>
         </div>
 
         <div className="wtm-auth-mid">

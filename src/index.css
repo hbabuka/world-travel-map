@@ -136,6 +136,27 @@ html, body, #root { margin: 0; height: 100%; padding: 0; }
 .wtm-headend { display: flex; align-items: center; gap: 16px; flex: 0 0 auto; }
 .wtm-clock { color: var(--faint); font-size: 11px; white-space: nowrap; }
 @media (max-width: 720px) { .wtm-clock { display: none; } }
+
+@media (max-width: 720px) {
+  .wtm-header { gap: 12px; padding: 0 14px; }
+
+  /* Brand collapses when search is active */
+  .wtm-brand {
+    overflow: hidden;
+    transition: max-width .22s ease, opacity .18s ease, margin .22s ease;
+    max-width: 200px;
+  }
+  .wtm-brand-tag { display: none; }
+  .search-active .wtm-brand {
+    max-width: 0;
+    opacity: 0;
+    margin: 0;
+  }
+
+  /* Search expands to fill freed space */
+  .wtm-search { transition: max-width .22s ease; }
+  .search-active .wtm-search { max-width: none; }
+}
 .wtm-avatar {
   width: 34px; height: 34px; border-radius: 50%;
   border: 1px solid var(--hair);

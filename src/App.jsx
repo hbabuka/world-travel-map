@@ -29,7 +29,8 @@ export default function App() {
   const [justAdded, setJustAdded] = useState(null)
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => window.innerWidth < 768)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalTab, setModalTab] = useState('visited')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -64,7 +65,10 @@ export default function App() {
 
   useEffect(() => {
     const onDoc = e => {
-      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) setSearchOpen(false)
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setSearchOpen(false)
+        setSearchFocused(false)
+      }
       if (accountRef.current && !accountRef.current.contains(e.target)) setMenuOpen(false)
     }
     document.addEventListener('mousedown', onDoc)
@@ -174,6 +178,7 @@ export default function App() {
     addVisit(name)
     setQuery('')
     setSearchOpen(false)
+    setSearchFocused(false)
   }, [addVisit])
 
   const chips = useMemo(() => {
@@ -219,7 +224,7 @@ export default function App() {
     <div className="wtm-root chip-outline">
 
       {/* Header */}
-      <header className="wtm-header">
+      <header className={`wtm-header${searchFocused ? ' search-active' : ''}`}>
         <div className="wtm-brand">
           <Logo />
           <span className="wtm-wordmark">Stamped</span>
@@ -237,10 +242,10 @@ export default function App() {
             placeholder="Search a country to pin it…"
             value={query}
             onChange={e => { setQuery(e.target.value); setSearchOpen(true) }}
-            onFocus={() => setSearchOpen(true)}
+            onFocus={() => { setSearchOpen(true); setSearchFocused(true) }}
             onKeyDown={e => {
               if (e.key === 'Enter' && matches.length) pick(matches[0])
-              if (e.key === 'Escape') { setQuery(''); setSearchOpen(false) }
+              if (e.key === 'Escape') { setQuery(''); setSearchOpen(false); setSearchFocused(false) }
             }}
           />
           {searchOpen && matches.length > 0 && (

@@ -16,7 +16,7 @@ export function PlacesBar({ chips, justAdded, onRemove, onOpenAll }) {
     for (let i = 0; i < kids.length; i++) {
       const w = kids[i].getBoundingClientRect().width
       const next = used + (i > 0 ? gap : 0) + w
-      const reserve = i < kids.length - 1 ? 128 : 0
+      const reserve = 0
       if (next + reserve > avail) break
       used = next; fit++
     }

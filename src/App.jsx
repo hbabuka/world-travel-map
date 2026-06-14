@@ -237,6 +237,7 @@ export default function App() {
   const searchBoxRef = useRef(null)
   const tipRef = useRef(null)
   const mouse = useRef({ x: 0, y: 0 })
+  const [tipInitial, setTipInitial] = useState({ x: 0, y: 0 })
   const accountRef = useRef(null)
 
   /* Tooltip follows cursor via direct DOM writes — avoids map re-renders on mousemove */
@@ -251,6 +252,11 @@ export default function App() {
     window.addEventListener('mousemove', onMove)
     return () => window.removeEventListener('mousemove', onMove)
   }, [])
+
+  /* Capture mount position when tooltip first appears */
+  useEffect(() => {
+    if (hoverName) setTipInitial({ ...mouse.current })
+  }, [hoverName])
 
   useEffect(() => {
     const onDoc = e => {
@@ -600,7 +606,7 @@ export default function App() {
       {hoverName && (
         <Tooltip
           ref={tipRef}
-          initial={mouse.current}
+          initial={tipInitial}
           name={hoverName}
           visited={visitedNames.has(hoverName)}
           continent={continentOf(hoverName)}

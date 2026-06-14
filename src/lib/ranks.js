@@ -5,8 +5,8 @@ export const RANKS = [
   { name: 'Full Passport',   min: 30,  max: 49  },
   { name: 'Second Passport', min: 50,  max: 74  },
   { name: 'Diplomat',        min: 75,  max: 99  },
-  { name: 'Cartographer',    min: 100, max: 139 },
-  { name: 'World Atlas',     min: 140, max: Infinity },
+  { name: 'Cartographer',    min: 100, max: 149 },
+  { name: 'World Atlas',     min: 150, max: Infinity },
 ]
 
 export function getRank(count) {

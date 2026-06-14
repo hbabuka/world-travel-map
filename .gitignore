@@ -17,6 +17,9 @@ design_handoff
 .env
 .env.local
 
+# Claude Code local config
+.claude/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

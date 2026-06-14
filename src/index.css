@@ -581,12 +581,21 @@ html, body, #root { margin: 0; height: 100%; padding: 0; }
 /* ─── Empty state ────────────────────────────────────────────────────────── */
 .wtm-empty { position: absolute; inset: 0; display: grid; place-items: center; z-index: 11; pointer-events: none; padding: 20px; }
 .wtm-empty-card {
-  pointer-events: auto; width: 100%; max-width: 384px; text-align: center;
+  position: relative; pointer-events: auto; width: 100%; max-width: 384px; text-align: center;
   background: color-mix(in srgb, var(--panel) 94%, transparent);
   -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
   border: 1px solid var(--hair); border-radius: 16px; padding: 30px 32px;
   box-shadow: 0 30px 70px -28px rgba(0,0,0,.5);
 }
+.wtm-empty-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 28px; height: 28px; border-radius: 7px; border: none;
+  background: transparent; color: var(--faint);
+  font-size: 20px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.wtm-empty-close:hover { background: var(--hair); color: var(--ink); }
 .wtm-empty-eyebrow { color: var(--accent); margin-bottom: 12px; }
 .wtm-empty-title { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -.03em; margin: 0 0 10px; }
 .wtm-empty-sub { font-size: 14px; line-height: 1.5; color: var(--muted); margin: 0 0 22px; }

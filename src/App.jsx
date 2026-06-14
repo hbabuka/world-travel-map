@@ -33,6 +33,7 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
+  const [emptyDismissed, setEmptyDismissed] = useState(false)
 
   const mapRef = useRef(null)
   const addTimer = useRef(null)
@@ -99,6 +100,7 @@ export default function App() {
     setMenuOpen(false)
     setModalOpen(false)
     setConfirmReset(false)
+    setEmptyDismissed(false)
   }, [visitedNames, removeByName])
 
   const nameSet = useMemo(() => new Set(ALL_FEATURES.map(f => f.properties.name)), [])
@@ -308,7 +310,9 @@ export default function App() {
             />
           )}
 
-          {count === 0 && <EmptyState onLoadSample={loadSample} />}
+          {count === 0 && !emptyDismissed && (
+            <EmptyState onLoadSample={loadSample} onDismiss={() => setEmptyDismissed(true)} />
+          )}
 
           {collapsed && (
             <button className="wtm-reopen" onClick={() => setCollapsed(false)} aria-label="Show panel">

@@ -1,6 +1,6 @@
 import { CountUp } from '@/components/ui/CountUp'
 import { CONTINENT_ORDER } from '@/lib/continents'
-import { getRank } from '@/lib/ranks'
+import { getRank, RANKS } from '@/lib/ranks'
 
 export function SidePanel({ count, pct, continentsCovered, continentTotals, visitedByContinent, mapTotal, onCollapse, onOpenRemaining }) {
   const { rank, next, index, progress } = getRank(count)
@@ -75,14 +75,29 @@ export function SidePanel({ count, pct, continentsCovered, continentTotals, visi
                 </div>
                 <span className="wtm-rank-name">{rank.name}</span>
               </div>
-              <span className="mono wtm-rank-index wtm-faint">{index + 1} / 8</span>
             </div>
-            <div className="wtm-rank-track">
-              <div className="wtm-rank-bar" style={{ width: `${progress * 100}%` }} />
+
+            <div className="wtm-rank-steps" aria-label="Rank progress">
+              {RANKS.map((r, i) => (
+                <div key={r.name} className="wtm-rank-step">
+                  <div
+                    className={`wtm-rank-dot${i < index ? ' done' : i === index ? ' current' : ''}`}
+                    title={r.name}
+                  />
+                  {i < RANKS.length - 1 && (
+                    <div className={`wtm-rank-seg${i < index ? ' done' : ''}`}>
+                      {i === index && (
+                        <div className="wtm-rank-seg-fill" style={{ width: `${progress * 100}%` }} />
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
+
             <div className="wtm-rank-foot mono">
               {next ? (
-                <span className="wtm-rank-next">{next.min - count} countries to <b>{next.name}</b></span>
+                <span className="wtm-rank-next">{next.min - count} to <b>{next.name}</b></span>
               ) : (
                 <span className="wtm-rank-max">Max rank reached</span>
               )}

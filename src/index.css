@@ -245,6 +245,42 @@ html, body, #root { margin: 0; height: 100%; padding: 0; }
 }
 .wtm-remaining-btn:hover { opacity: .7; }
 
+.wtm-info-wrap {
+  position: relative; display: inline-flex; align-items: center;
+}
+.wtm-info-icon {
+  color: var(--muted); cursor: default; display: block;
+  transition: color .15s;
+}
+.wtm-info-wrap:hover .wtm-info-icon { color: var(--ink); }
+.wtm-info-tip {
+  display: none;
+  position: absolute; bottom: calc(100% + 8px); right: 0;
+  width: 188px; padding: 10px 12px 8px;
+  background: var(--ink); color: var(--surface-1);
+  font-family: 'Space Mono', monospace; font-size: 10px; line-height: 1.4;
+  border-radius: 8px; letter-spacing: .01em;
+  pointer-events: none; z-index: 100;
+}
+.wtm-info-tip::after {
+  content: '';
+  position: absolute; top: 100%; right: 10px;
+  border: 5px solid transparent;
+  border-top-color: var(--ink);
+}
+.wtm-info-tip-title {
+  display: block; color: var(--faint); text-transform: uppercase;
+  letter-spacing: .08em; font-size: 9px; margin-bottom: 7px;
+}
+.wtm-info-tip-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.wtm-info-tip-row:last-child { border-bottom: 0; }
+.wtm-info-tip-row b { color: #fff; font-weight: 700; }
+.wtm-info-tip-row span { color: rgba(255,255,255,.45); font-size: 9px; }
+.wtm-info-wrap:hover .wtm-info-tip { display: flex; flex-direction: column; }
+
 .wtm-hero-num {
   font-family: 'Archivo', sans-serif; font-weight: 900;
   font-size: 84px; line-height: .9; letter-spacing: -.045em;

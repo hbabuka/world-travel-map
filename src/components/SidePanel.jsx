@@ -82,7 +82,25 @@ export function SidePanel({ count, pct, continentsCovered, continentTotals, visi
 
         {/* Passport rank */}
         <div className="wtm-sect">
-          <div className="wtm-sect-head"><span className="mono">Passport rank</span></div>
+          <div className="wtm-sect-head">
+            <span className="mono">Passport rank</span>
+            <span className="wtm-info-wrap">
+              <svg className="wtm-info-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+                <line x1="12" y1="12" x2="12" y2="16"/>
+              </svg>
+              <span className="wtm-info-tip" role="tooltip">
+                <span className="wtm-info-tip-title">Rank tiers</span>
+                {RANKS.map(r => (
+                  <span key={r.name} className="wtm-info-tip-row">
+                    <b>{r.name}</b>
+                    <span>{r.max === Infinity ? `${r.min}+` : `${r.min}–${r.max}`}</span>
+                  </span>
+                ))}
+              </span>
+            </span>
+          </div>
           <div className="wtm-rank">
             <div className="wtm-rank-top">
               <div className="wtm-rank-badge">

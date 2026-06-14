@@ -274,6 +274,44 @@ html, body, #root { margin: 0; height: 100%; padding: 0; }
   transition: width .6s cubic-bezier(.22,.61,.36,1);
 }
 
+/* ─── Rank card ──────────────────────────────────────────────────────────── */
+.wtm-rank {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.wtm-rank-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.wtm-rank-badge {
+  display: flex; align-items: center; gap: 7px;
+}
+.wtm-rank-stamp {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+}
+.wtm-rank-stamp svg { display: block; }
+.wtm-rank-name {
+  font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 14px;
+  letter-spacing: -.02em; color: var(--ink); line-height: 1;
+}
+.wtm-rank-index { color: var(--faint); }
+.wtm-rank-track {
+  height: 5px; background: var(--hair); border-radius: 99px; overflow: hidden;
+}
+.wtm-rank-bar {
+  height: 100%; border-radius: 99px; background: var(--accent);
+  transition: width .7s cubic-bezier(.22,.61,.36,1);
+}
+.wtm-rank-foot {
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.wtm-rank-next { color: var(--muted); }
+.wtm-rank-next b { color: var(--ink); font-weight: 700; }
+.wtm-rank-max { color: var(--accent); }
+.wtm-faint { color: var(--faint); }
+
 /* ─── Reopen tab ─────────────────────────────────────────────────────────── */
 .wtm-reopen {
   position: absolute; top: 18px; right: 0; z-index: 14;

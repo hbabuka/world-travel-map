@@ -14,6 +14,7 @@ import {
   CONTINENT_ORDER, WORLD_TOTAL,
   continentOf, resolveAlias, SEED,
 } from '@/lib/continents'
+import { getRank } from '@/lib/ranks'
 
 /* ─── Count-up animated number ───────────────────────────────────────────── */
 function CountUp({ value, duration = 650 }) {
@@ -294,6 +295,8 @@ export default function App() {
 
   const nameSet = useMemo(() => new Set(ALL_FEATURES.map(f => f.properties.name)), [])
 
+  const { rank, next, index, progress } = getRank(visitedNames.size)
+
   const continentTotals = useMemo(() => {
     const totals = {}
     CONTINENT_ORDER.forEach(c => { totals[c] = 0 })
@@ -556,6 +559,36 @@ export default function App() {
                   </div>
                 )
               })}
+            </div>
+
+            {/* Passport rank */}
+            <div className="wtm-sect">
+              <div className="wtm-sect-head"><span className="mono">Passport rank</span></div>
+              <div className="wtm-rank">
+                <div className="wtm-rank-top">
+                  <div className="wtm-rank-badge">
+                    <div className="wtm-rank-stamp">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
+                        <circle cx="12" cy="9" r="2.5"/>
+                      </svg>
+                    </div>
+                    <span className="wtm-rank-name">{rank.name}</span>
+                  </div>
+                  <span className="mono wtm-rank-index wtm-faint">{index + 1} / 8</span>
+                </div>
+                <div className="wtm-rank-track">
+                  <div className="wtm-rank-bar" style={{ width: `${progress * 100}%` }} />
+                </div>
+                <div className="wtm-rank-foot mono">
+                  {next ? (
+                    <span className="wtm-rank-next">{next.min - visitedNames.size} countries to <b>{next.name}</b></span>
+                  ) : (
+                    <span className="wtm-rank-max">Max rank reached</span>
+                  )}
+                  <span className="wtm-faint">{visitedNames.size} stamped</span>
+                </div>
+              </div>
             </div>
           </div>
         </aside>

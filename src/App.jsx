@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { feature } from 'topojson-client'
-import worldData from 'world-atlas/countries-110m.json'
+import worldData from 'world-atlas/countries-50m.json'
 import { useAuth } from '@/hooks/useAuth'
 import { useTrips } from '@/hooks/useTrips'
 import { WorldMap } from '@/components/map/WorldMap'

@@ -208,7 +208,7 @@ html, body, #root { margin: 0; height: 100%; padding: 0; }
 }
 .wtm-zoom button:last-child { border-bottom: 0; }
 .wtm-zoom button:hover { background: color-mix(in srgb, var(--accent) 12%, var(--panel)); color: var(--accent); }
-.wtm-zoom-reset { font-size: 13px !important; font-family: var(--mono) !important; }
+.wtm-zoom-reset { display: flex; align-items: center; justify-content: center; }
 
 /* ─── Side panel ─────────────────────────────────────────────────────────── */
 .wtm-panel {

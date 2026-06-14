@@ -1,224 +1,26 @@
-import {
-  useState, useEffect, useRef, useMemo, useCallback,
-  useLayoutEffect, forwardRef,
-} from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { feature } from 'topojson-client'
 import worldData from 'world-atlas/countries-110m.json'
 import { useAuth } from '@/hooks/useAuth'
 import { useTrips } from '@/hooks/useTrips'
 import { WorldMap } from '@/components/map/WorldMap'
+import { MapTooltip } from '@/components/map/MapTooltip'
 import { LoginScreen } from '@/components/auth/LoginScreen'
 import { LoadingScreen } from '@/components/auth/LoadingScreen'
 import { Logo } from '@/components/Logo'
+import { Clock } from '@/components/ui/Clock'
+import { PlacesBar } from '@/components/PlacesBar'
+import { EmptyState } from '@/components/EmptyState'
+import { SidePanel } from '@/components/SidePanel'
+import { AllPlacesModal } from '@/components/modals/AllPlacesModal'
+import { ConfirmResetModal } from '@/components/modals/ConfirmResetModal'
 import {
   CONTINENT_ORDER, WORLD_TOTAL,
   continentOf, resolveAlias, SEED,
 } from '@/lib/continents'
-import { getRank } from '@/lib/ranks'
 
-/* ─── Count-up animated number ───────────────────────────────────────────── */
-function CountUp({ value, duration = 650 }) {
-  const [disp, setDisp] = useState(value)
-  const prev = useRef(value)
-  useEffect(() => {
-    const from = prev.current, to = value
-    prev.current = value
-    if (from === to) { setDisp(to); return }
-    let raf, start
-    const step = (ts) => {
-      if (!start) start = ts
-      const p = Math.min((ts - start) / duration, 1)
-      const e = 1 - Math.pow(1 - p, 3)
-      const val = from + (to - from) * e
-      setDisp(
-        Number.isInteger(from) && Number.isInteger(to)
-          ? Math.round(val)
-          : Math.round(val * 10) / 10
-      )
-      if (p < 1) raf = requestAnimationFrame(step)
-    }
-    raf = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(raf)
-  }, [value, duration])
-  return <>{disp}</>
-}
-
-/* ─── Live clock ─────────────────────────────────────────────────────────── */
-function Clock() {
-  const [now, setNow] = useState(() => new Date())
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000)
-    return () => clearInterval(id)
-  }, [])
-  const p = n => String(n).padStart(2, '0')
-  return (
-    <span className="mono wtm-clock">
-      {now.getFullYear()}.{p(now.getMonth() + 1)}.{p(now.getDate())} · {p(now.getHours())}:{p(now.getMinutes())}:{p(now.getSeconds())}
-    </span>
-  )
-}
-
-/* ─── Removable country chip ─────────────────────────────────────────────── */
-function Chip({ name, isNew, onRemove }) {
-  return (
-    <span className={`wtm-chip${isNew ? ' is-new' : ''}`}>
-      {name}
-      <button className="wtm-chip-x" onClick={() => onRemove(name)} aria-label={`Remove ${name}`}>
-        ×
-      </button>
-    </span>
-  )
-}
-
-/* ─── Places bottom bar ──────────────────────────────────────────────────── */
-function PlacesBar({ chips, justAdded, onRemove, onOpenAll }) {
-  const rowRef = useRef(null)
-  const measureRef = useRef(null)
-  const [visN, setVisN] = useState(chips.length)
-
-  const recompute = useCallback(() => {
-    const row = rowRef.current, meas = measureRef.current
-    if (!row || !meas) return
-    const avail = row.clientWidth
-    const kids = meas.children
-    const gap = 7
-    let used = 0, fit = 0
-    for (let i = 0; i < kids.length; i++) {
-      const w = kids[i].getBoundingClientRect().width
-      const next = used + (i > 0 ? gap : 0) + w
-      const reserve = i < kids.length - 1 ? 128 : 0
-      if (next + reserve > avail) break
-      used = next; fit++
-    }
-    setVisN(Math.max(1, fit))
-  }, [])
-
-  useLayoutEffect(() => { recompute() }, [chips, recompute])
-  useEffect(() => {
-    const row = rowRef.current
-    if (!row || typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', recompute)
-      return () => window.removeEventListener('resize', recompute)
-    }
-    const ro = new ResizeObserver(recompute)
-    ro.observe(row)
-    return () => ro.disconnect()
-  }, [recompute])
-
-  const hidden = chips.length - visN
-  const shown = chips.slice(0, visN)
-
-  return (
-    <div className="wtm-places">
-      {chips.length === 0 ? (
-        <div className="wtm-places-row">
-          <span className="wtm-places-empty">Search above or click the map to pin where you&rsquo;ve been.</span>
-        </div>
-      ) : (
-        <>
-          <div className="wtm-places-row" ref={rowRef}>
-            {shown.map(name => (
-              <Chip key={name} name={name} isNew={justAdded === name} onRemove={onRemove} />
-            ))}
-          </div>
-          <button className="wtm-more" onClick={onOpenAll}>
-            {hidden > 0 ? `+${hidden} more` : 'View all'}
-          </button>
-        </>
-      )}
-      {/* hidden measurer — mirrors chip widths without layout side effects */}
-      <div className="wtm-measure" ref={measureRef} aria-hidden="true">
-        {chips.map(name => (
-          <span className="wtm-chip" key={name}>
-            {name}<button className="wtm-chip-x">×</button>
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-/* ─── All Places modal ───────────────────────────────────────────────────── */
-function AllPlacesModal({ open, byContinent, total, onRemove, onClose }) {
-  useEffect(() => {
-    if (!open) return
-    const onKey = e => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose])
-
-  if (!open) return null
-  return (
-    <div className="wtm-modal-scrim" onClick={onClose}>
-      <div className="wtm-modal" onClick={e => e.stopPropagation()}>
-        <div className="wtm-modal-head">
-          <div>
-            <div className="mono">Field log · {total} {total === 1 ? 'country' : 'countries'}</div>
-            <div className="wtm-modal-title">All places visited</div>
-          </div>
-          <button className="wtm-modal-x" onClick={onClose} aria-label="Close">×</button>
-        </div>
-        <div className="wtm-modal-body">
-          {total === 0 && <div className="wtm-modal-empty">No countries pinned yet.</div>}
-          {CONTINENT_ORDER.map(cont => {
-            const list = byContinent[cont] || []
-            if (!list.length) return null
-            return (
-              <div className="wtm-modal-group" key={cont}>
-                <div className="wtm-modal-group-head">
-                  <span className="mono" style={{ color: 'var(--ink)', fontWeight: 700 }}>{cont}</span>
-                  <span className="mono">{list.length}</span>
-                </div>
-                <div className="wtm-modal-chips">
-                  {list.map(name => (
-                    <Chip key={name} name={name} onRemove={onRemove} />
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ─── Country tooltip (cursor-following via direct DOM writes) ───────────── */
-const Tooltip = forwardRef(function Tooltip({ name, initial, visited, continent }, ref) {
-  return (
-    <div className="wtm-tooltip" ref={ref} style={{ left: initial.x, top: initial.y }}>
-      <div className="wtm-tip-name">{name}</div>
-      <div className={`wtm-tip-status${visited ? ' is-visited' : ''}`}>
-        {visited ? '✓ Visited' : 'Click to add'}
-        {continent && <span className="wtm-tip-cont"> · {continent}</span>}
-      </div>
-    </div>
-  )
-})
-
-/* ─── Empty state card ───────────────────────────────────────────────────── */
-function EmptyState({ onLoadSample }) {
-  return (
-    <div className="wtm-empty">
-      <div className="wtm-empty-card">
-        <div className="mono wtm-empty-eyebrow">Get started</div>
-        <h2 className="wtm-empty-title">Start your travel map</h2>
-        <p className="wtm-empty-sub">
-          Search a country up top, or click any shape on the map to pin where you&rsquo;ve been.
-        </p>
-        <div className="wtm-empty-actions">
-          <button className="wtm-empty-btn" onClick={onLoadSample}>Load a sample trip</button>
-          <span className="mono wtm-empty-hint">or click the map</span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ─── Parse world-atlas once at module level ─────────────────────────────── */
 const ALL_FEATURES = feature(worldData, worldData.objects.countries).features
 
-/* ─── App ────────────────────────────────────────────────────────────────── */
 export default function App() {
   const { user, loading: authLoading, signInWithGoogle, signInWithGitHub, signInWithEmail, signOut } = useAuth()
   const { addTrip, removeByName, visitedNames } = useTrips(user?.id)
@@ -279,9 +81,7 @@ export default function App() {
     pulse(name)
   }, [visitedNames, addTrip, pulse])
 
-  const removeVisit = useCallback(name => {
-    removeByName(name)
-  }, [removeByName])
+  const removeVisit = useCallback(name => removeByName(name), [removeByName])
 
   const toggle = useCallback(name => {
     if (visitedNames.has(name)) removeVisit(name)
@@ -302,8 +102,6 @@ export default function App() {
   }, [visitedNames, removeByName])
 
   const nameSet = useMemo(() => new Set(ALL_FEATURES.map(f => f.properties.name)), [])
-
-  const { rank, next, index, progress } = getRank(visitedNames.size)
 
   const continentTotals = useMemo(() => {
     const totals = {}
@@ -359,7 +157,6 @@ export default function App() {
     setSearchOpen(false)
   }, [addVisit])
 
-  /* chips: most-recent first, justAdded pinned to front */
   const chips = useMemo(() => {
     const arr = [...visitedNames].reverse()
     if (justAdded && arr.includes(justAdded)) {
@@ -520,91 +317,18 @@ export default function App() {
           )}
         </div>
 
-        {/* Side panel */}
-        <aside className="wtm-panel">
-          <div className="wtm-panel-inner">
-            <div className="wtm-panel-head">
-              <span className="mono">Overview</span>
-              <button className="wtm-collapse" onClick={() => setCollapsed(true)} aria-label="Collapse panel">›</button>
-            </div>
-
-            {/* Hero stat */}
-            <div className="wtm-sect">
-              <div className="wtm-hero-num"><CountUp value={count} /></div>
-              <div className="mono wtm-hero-label">Countries visited</div>
-              <div className="wtm-substats">
-                <div className="wtm-substat">
-                  <div className="wtm-substat-num">
-                    <CountUp value={pct} /><span className="of">%</span>
-                  </div>
-                  <div className="mono wtm-substat-label">Of the world</div>
-                </div>
-                <div className="wtm-substat">
-                  <div className="wtm-substat-num">
-                    <CountUp value={continentsCovered} /><span className="of">/6</span>
-                  </div>
-                  <div className="mono wtm-substat-label">Continents</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Continent breakdown */}
-            <div className="wtm-sect">
-              <div className="wtm-sect-head"><span className="mono">By continent</span></div>
-              {CONTINENT_ORDER.map(c => {
-                const tot = continentTotals[c] || 0
-                const v = visitedByContinent[c] || 0
-                const w = tot ? Math.round((v / tot) * 100) : 0
-                return (
-                  <div className="wtm-cont-row" key={c}>
-                    <div className="wtm-cont-top">
-                      <span className="wtm-cont-name">{c}</span>
-                      <span className="wtm-cont-count"><b>{v}</b> / {tot}</span>
-                    </div>
-                    <div className="wtm-cont-track">
-                      <div className="wtm-cont-bar" style={{ width: w + '%' }} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Passport rank */}
-            <div className="wtm-sect">
-              <div className="wtm-sect-head"><span className="mono">Passport rank</span></div>
-              <div className="wtm-rank">
-                <div className="wtm-rank-top">
-                  <div className="wtm-rank-badge">
-                    <div className="wtm-rank-stamp">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/>
-                        <circle cx="12" cy="9" r="2.5"/>
-                      </svg>
-                    </div>
-                    <span className="wtm-rank-name">{rank.name}</span>
-                  </div>
-                  <span className="mono wtm-rank-index wtm-faint">{index + 1} / 8</span>
-                </div>
-                <div className="wtm-rank-track">
-                  <div className="wtm-rank-bar" style={{ width: `${progress * 100}%` }} />
-                </div>
-                <div className="wtm-rank-foot mono">
-                  {next ? (
-                    <span className="wtm-rank-next">{next.min - visitedNames.size} countries to <b>{next.name}</b></span>
-                  ) : (
-                    <span className="wtm-rank-max">Max rank reached</span>
-                  )}
-                  <span className="wtm-faint">{visitedNames.size} stamped</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </aside>
+        <SidePanel
+          count={count}
+          pct={pct}
+          continentsCovered={continentsCovered}
+          continentTotals={continentTotals}
+          visitedByContinent={visitedByContinent}
+          onCollapse={() => setCollapsed(true)}
+        />
       </div>
 
-      {/* Cursor tooltip — shown while hovering a country */}
       {hoverName && (
-        <Tooltip
+        <MapTooltip
           ref={tipRef}
           initial={tipInitial}
           name={hoverName}
@@ -613,7 +337,6 @@ export default function App() {
         />
       )}
 
-      {/* All places modal */}
       <AllPlacesModal
         open={modalOpen}
         byContinent={groupedVisited}
@@ -622,20 +345,12 @@ export default function App() {
         onClose={() => setModalOpen(false)}
       />
 
-      {/* Reset map confirmation */}
       {confirmReset && (
-        <div className="wtm-modal-scrim" onClick={() => setConfirmReset(false)}>
-          <div className="wtm-confirm" onClick={e => e.stopPropagation()}>
-            <p className="wtm-confirm-title">Reset your map?</p>
-            <p className="wtm-confirm-body">
-              This will remove all {visitedNames.size} pinned {visitedNames.size === 1 ? 'country' : 'countries'}. This can&rsquo;t be undone.
-            </p>
-            <div className="wtm-confirm-actions">
-              <button className="wtm-confirm-cancel" onClick={() => setConfirmReset(false)}>Cancel</button>
-              <button className="wtm-confirm-ok" onClick={resetMap}>Yes, reset</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmResetModal
+          count={count}
+          onConfirm={resetMap}
+          onCancel={() => setConfirmReset(false)}
+        />
       )}
     </div>
   )
